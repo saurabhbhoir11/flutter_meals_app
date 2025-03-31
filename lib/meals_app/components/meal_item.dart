@@ -5,11 +5,12 @@ import 'package:meals_app/meals_app/screens/meal_details_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MealItem extends StatelessWidget {
-  const MealItem(
-      {super.key,
-      required this.meal,
-      required this.onSelectMeal,
-      required this.onToggleFavorite});
+  const MealItem({
+    super.key,
+    required this.meal,
+    required this.onSelectMeal,
+    required this.onToggleFavorite,
+  });
 
   final Meal meal;
   final void Function(Meal meal) onSelectMeal;
@@ -29,18 +30,13 @@ class MealItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.hardEdge,
       elevation: 10,
       child: InkWell(
         onTap: () {
           Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (ctx) => MealDetailsScreen(
-                  meal: meal, onToggleFavorite: onToggleFavorite),
-            ),
+            MaterialPageRoute(builder: (ctx) => MealDetailsScreen(meal: meal)),
           );
         },
         child: Stack(
@@ -58,8 +54,10 @@ class MealItem extends StatelessWidget {
               right: 0,
               child: Container(
                 color: Colors.black54,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 40),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 40,
+                ),
                 child: Column(
                   children: [
                     Text(
@@ -69,29 +67,21 @@ class MealItem extends StatelessWidget {
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         MealItemTrait(
-                            icon: Icons.schedule,
-                            label: '${meal.duration} mins'),
-                        const SizedBox(
-                          width: 8,
+                          icon: Icons.schedule,
+                          label: '${meal.duration} mins',
                         ),
-                        MealItemTrait(
-                          icon: Icons.work,
-                          label: complexityText,
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
+                        const SizedBox(width: 8),
+                        MealItemTrait(icon: Icons.work, label: complexityText),
+                        const SizedBox(width: 8),
                         MealItemTrait(
                           icon: Icons.work,
                           label: affordabilityText,

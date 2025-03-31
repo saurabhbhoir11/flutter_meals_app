@@ -1,33 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/meals_app/components/meal_item.dart';
 import 'package:meals_app/meals_app/models/meal.dart';
+import 'package:meals_app/meals_app/providers/favorites_provider.dart';
 import 'package:meals_app/meals_app/screens/meal_details_screen.dart';
 
-class MealsScreen extends StatelessWidget {
-  const MealsScreen({
-    super.key,
-    this.title,
-    required this.meals,
-    required this.onToggleFavorite,
-  });
+class MealsScreen extends ConsumerWidget {
+  const MealsScreen({super.key, this.title, required this.meals});
 
   final String? title;
   final List<Meal> meals;
-  final void Function(Meal meal) onToggleFavorite;
 
   void selectMeal(BuildContext context, Meal meal) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => MealDetailsScreen(
-          meal: meal,
-          onToggleFavorite: onToggleFavorite,
-        ),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (ctx) => MealDetailsScreen(meal: meal)));
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Widget content;
 
     if (meals.isEmpty) {
@@ -38,31 +29,33 @@ class MealsScreen extends StatelessWidget {
             Text(
               'Uh Oh!... Nothing Here',
               style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             Text(
               'Try Selecting A Different Category',
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-            )
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
           ],
         ),
       );
     } else {
       content = ListView.builder(
         itemCount: meals.length,
-        itemBuilder: (ctx, index) => MealItem(
-          meal: meals[index],
-          onSelectMeal: (meal) {
-            selectMeal(context, meal);
-          },
-          onToggleFavorite: onToggleFavorite,
-        ),
+        itemBuilder:
+            (ctx, index) => MealItem(
+              meal: meals[index],
+              onSelectMeal: (meal) {
+                selectMeal(context, meal);
+              },
+              onToggleFavorite:
+                  ref
+                      .read(favoriteMealsProvider.notifier)
+                      .toggleMealFavoriteStatus,
+            ),
       );
     }
 
@@ -71,12 +64,7 @@ class MealsScreen extends StatelessWidget {
     }
 
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title!),
-        ),
-        body: content,
-      ),
+      child: Scaffold(appBar: AppBar(title: Text(title!)), body: content),
     );
   }
 }
