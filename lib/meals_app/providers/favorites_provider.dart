@@ -18,6 +18,7 @@ class FavoriteMealsNotifier extends StateNotifier<Set<Meal>> {
   }
 }
 
-final favoriteMealsProvider = StateNotifierProvider((ref) {
-  return FavoriteMealsNotifier();
-});
+final favoriteMealsProvider =
+    StateNotifierProvider<FavoriteMealsNotifier, Set<Meal>>((ref) {
+      return FavoriteMealsNotifier();
+    });
