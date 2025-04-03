@@ -6,19 +6,46 @@ import 'package:meals_app/meals_app/screens/meals_screen.dart';
 
 import '../models/category.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key, required this.availableMeals});
 
   final List<Meal> availableMeals;
+
+  @override
+  State<CategoriesScreen> createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationColtroller;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationColtroller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+      lowerBound: 0,
+      upperBound: 1,
+    );
+
+    _animationColtroller.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationColtroller.dispose();
+    super.dispose();
+  }
 
   void _selectCategory(BuildContext context, Category category) {
     List<Meal> filteredMeals;
 
     if (category.id == 'all') {
-      filteredMeals = availableMeals;
+      filteredMeals = widget.availableMeals;
     } else {
       filteredMeals =
-          availableMeals
+          widget.availableMeals
               .where((meal) => meal.categories.contains(category.id))
               .toList();
     }
@@ -33,25 +60,42 @@ class CategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: GridView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 3 / 2,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
+    // final deviceHeight = MediaQuery.sizeOf(context).height;
+    return AnimatedBuilder(
+      animation: _animationColtroller,
+      child: SafeArea(
+        child: GridView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 3 / 2,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+          ),
+          children: [
+            for (final Category category in availableCategories)
+              CategoryGridItem(
+                category: category,
+                onSelectCategory: () {
+                  _selectCategory(context, category);
+                },
+              ),
+          ],
         ),
-        children: [
-          for (final Category category in availableCategories)
-            CategoryGridItem(
-              category: category,
-              onSelectCategory: () {
-                _selectCategory(context, category);
-              },
-            ),
-        ],
       ),
+      builder:
+          (context, child) => SlideTransition(
+            position: Tween(
+              begin: const Offset(0, 1),
+              end: const Offset(0, 0),
+            ).animate(
+              CurvedAnimation(
+                parent: _animationColtroller,
+                curve: Curves.easeInOutCubicEmphasized,
+              ),
+            ),
+            child: child,
+          ),
     );
   }
 }

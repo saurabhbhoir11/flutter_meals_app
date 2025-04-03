@@ -43,9 +43,19 @@ class MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
                   ),
                 );
               },
-              icon: Icon(
-                Icons.star,
-                color: isFavorite ? Colors.amberAccent : Colors.white,
+              icon: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation) {
+                  return RotationTransition(
+                    turns: Tween(begin: 0.5, end: 1.0).animate(animation),
+                    child: child,
+                  );
+                },
+                child: Icon(
+                  Icons.star,
+                  color: isFavorite ? Colors.amberAccent : Colors.white,
+                  key: ValueKey(isFavorite),
+                ),
               ),
             ),
           ],
@@ -55,11 +65,14 @@ class MealDetailsScreenState extends ConsumerState<MealDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image(
-                image: widget.meal.image,
-                height: 300,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              Hero(
+                tag: widget.meal.id,
+                child: Image(
+                  image: widget.meal.image,
+                  height: 300,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
               const SizedBox(height: 15),
               Text(
